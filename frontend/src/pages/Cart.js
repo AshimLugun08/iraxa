@@ -11,7 +11,7 @@ const CartPage = () => {
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5000/api/cart', {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Failed to fetch cart');
@@ -31,7 +31,7 @@ const CartPage = () => {
   // Remove item from cart
   const handleRemove = async (itemId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/cart/remove/${itemId}`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/cart/remove/${itemId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -43,7 +43,7 @@ const CartPage = () => {
   // Change item quantity
   const handleQuantityChange = async (itemId, newQty) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/cart/update/${itemId}`, {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/cart/update/${itemId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ quantity: newQty }),

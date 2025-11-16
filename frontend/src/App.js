@@ -32,7 +32,7 @@ import CartPage from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import AuthCallback from "./pages/AuthCallback";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL =`${process.env.REACT_APP_BACKEND_URL}`; ;
 
 const AppContent = () => {
   const navigate = useNavigate();

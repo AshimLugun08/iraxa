@@ -53,7 +53,7 @@ const Header = ({ cartCount = 0 }) => {
 
         <Button
   onClick={() => {
-    const backend = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000/api";
+    const backend = process.env.REACT_APP_BACKEND_URL ;
 
     console.log("BACKEND URL USED:", backend);
     window.location.href = backend.replace(/\/$/, "") + "/auth/google";
