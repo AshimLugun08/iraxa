@@ -10,8 +10,8 @@ const { verifyAuth } = require('../middleware/auth');
 
 // 🛑 IMPORTANT: Define the frontend URL. This must match where your React app is running.
 const FRONTEND_URL = process.env.NODE_ENV === 'production' 
-    ? 'http://localhost:3000' 
-    : 'http://localhost:3000'; // Use 5173 or 3000, depending on your setup
+    ? 'http://localhost:5173' 
+    : 'http://localhost:5173'; // Use 5173 or 3000, depending on your setup
 
 module.exports = (passport) => {
 
