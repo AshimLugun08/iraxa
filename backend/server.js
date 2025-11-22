@@ -83,6 +83,8 @@ app.use("/api/cart", require("./routes/cart"));
 app.use("/api/orders", require("./routes/orders"));
 app.use("/api/users", require("./routes/user"));
 app.use("/api/address", addressRoutes);
+app.use("/api/payment", require("./routes/paymentRoutes"));
+
 
 // --- Health Check / Test Route ---
 app.get("/", (req, res) => {
