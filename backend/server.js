@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("./config/passport");
+const addressRoutes = require("./routes/addressRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -81,6 +82,7 @@ app.use("/api/auth", require("./routes/auth")(passport));
 app.use("/api/cart", require("./routes/cart"));
 app.use("/api/orders", require("./routes/orders"));
 app.use("/api/users", require("./routes/user"));
+app.use("/api/address", addressRoutes);
 
 // --- Health Check / Test Route ---
 app.get("/", (req, res) => {
