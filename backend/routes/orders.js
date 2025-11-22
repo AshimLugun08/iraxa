@@ -1,43 +1,101 @@
-const mongoose = require('mongoose');
+const express = require("express");
+const router = express.Router();
+const Order = require("../models/Order");
+const { protect } = require("../middleware/auth");
 
-const orderItemSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true,
-  },
-  quantity: { type: Number, required: true },
-  price: { type: Number, required: true },
-}, { _id: false });
+// Fields to select from product model
+const PRODUCT_POPULATE_FIELDS =
+  "name price category description images sizes colors";
+const USER_POPULATE_FIELDS = "name email";
 
-const orderSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
+// -------------------------------------
+// 🔥 CREATE ORDER
+// -------------------------------------
+router.post("/", protect, async (req, res) => {
+  try {
+    const { products, totalAmount, shippingAddress, paymentId } = req.body;
 
-  products: {
-    type: [orderItemSchema],
-    validate: v => Array.isArray(v) && v.length > 0,
-  },
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: "No products in order" });
+    }
 
-  totalAmount: { type: Number, required: true },
+    if (!shippingAddress) {
+      return res
+        .status(400)
+        .json({ message: "Shipping address is required" });
+    }
 
-  status: {
-    type: String,
-    enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
-    default: 'pending',
-  },
+    const order = await Order.create({
+      user: req.user._id,
+      products,
+      totalAmount,
+      shippingAddress,
+      paymentId,
+    });
 
-  paymentId: { type: String, default: null },
+    const populated = await Order.findById(order._id)
+      .populate({
+        path: "products.product",
+        select: PRODUCT_POPULATE_FIELDS,
+      })
+      .populate("shippingAddress")
+      .populate({
+        path: "user",
+        select: USER_POPULATE_FIELDS,
+      });
 
-  shippingAddress: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Address",    // <-- FIXED
-    required: true,
-  },
+    res.status(201).json({
+      message: "Order created successfully",
+      order: populated,
+    });
+  } catch (err) {
+    console.error("Order creation error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
 
-}, { timestamps: true });
+// -------------------------------------
+// 🔥 GET ALL ORDERS (Admin optional)
+// -------------------------------------
+router.get("/", async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate({
+        path: "products.product",
+        select: PRODUCT_POPULATE_FIELDS,
+      })
+      .populate("shippingAddress")
+      .populate({
+        path: "user",
+        select: USER_POPULATE_FIELDS,
+      })
+      .sort({ createdAt: -1 });
 
-module.exports = mongoose.model('Order', orderSchema);
+    res.json(orders);
+  } catch (err) {
+    console.error("Fetch orders error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// -------------------------------------
+// 🔥 GET LOGGED-IN USER ORDERS
+// -------------------------------------
+router.get("/my-orders", protect, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user._id })
+      .populate({
+        path: "products.product",
+        select: PRODUCT_POPULATE_FIELDS,
+      })
+      .populate("shippingAddress")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (err) {
+    console.error("Fetch my orders error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+module.exports = router;
