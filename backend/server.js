@@ -14,7 +14,8 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
   "https://admindashbord.vercel.app",
-  "https://iraxa-fashion-mart.vercel.app"
+  "https://iraxa-fashion-mart.vercel.app",
+  "https://iraxafashion.in"
 ];
 
 app.use(
